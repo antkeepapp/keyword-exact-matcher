@@ -152,6 +152,16 @@
             <span class="btn-text">Convert to Exact Match <span class="kbd">[ ]</span></span>
           </button>
 
+          <!-- Convert to Phrase Match -->
+          <button class="btn btn-primary-alt" id="btnPhraseMatch" title="Wrap keywords in &quot;phrase match&quot; format">
+            <span class="btn-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 21c3 0 7-9 7-14a5 5 0 0 0-5-5 5 5 0 0 0-5 5c0 5 4 14 7 14zm11 0c3 0 7-9 7-14a5 5 0 0 0-5-5 5 5 0 0 0-5 5c0 5 4 14 7 14z"/>
+              </svg>
+            </span>
+            <span class="btn-text">Convert to Phrase Match <span class="kbd">" "</span></span>
+          </button>
+
           <!-- Remove Duplicates -->
           <button class="btn btn-secondary" id="btnRemoveDuplicates" title="Clean up repetitive keywords from output">
             <span class="btn-icon">
@@ -197,6 +207,33 @@
         </div>
       </article>
     </main>
+
+    <!-- Feedback Section -->
+    <section class="feedback-card" id="feedbackCard">
+      <div class="feedback-header">
+        <div class="feedback-title">
+          <span class="feedback-icon">💡</span>
+          <h3>Want more features? Tell us what to build next!</h3>
+        </div>
+      </div>
+      <form class="feedback-form" id="feedbackForm">
+        <textarea 
+          id="feedbackText" 
+          placeholder="Share your feature ideas, suggestions, or report a bug... (e.g. 'Add a lowercase converter' or 'Allow exporting to CSV')"
+          spellcheck="false"
+          required
+        ></textarea>
+        <button class="btn btn-primary" id="btnSendFeedback" type="submit">
+          <span class="btn-icon" id="feedbackIcon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </span>
+          <span class="btn-text" id="feedbackBtnText">Send Feedback</span>
+        </button>
+      </form>
+    </section>
 
     <!-- Utility Action Bar (Bottom Controls) -->
     <footer class="utility-footer">

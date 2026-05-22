@@ -526,6 +526,23 @@ input:checked + .slider:before {
   box-shadow: 0 2px 6px rgba(26, 115, 232, 0.2);
 }
 
+.btn-primary-alt {
+  background-color: rgba(26, 115, 232, 0.05);
+  color: #8ab4f8;
+  border-color: rgba(26, 115, 232, 0.3);
+}
+
+.btn-primary-alt:hover {
+  background-color: rgba(26, 115, 232, 0.15);
+  border-color: #8ab4f8;
+  box-shadow: 0 4px 14px rgba(26, 115, 232, 0.2);
+  transform: translateY(-1px);
+}
+
+.btn-primary-alt:active {
+  transform: translateY(1px);
+}
+
 .btn-secondary {
   background-color: rgba(255, 255, 255, 0.04);
   color: var(--text-main);
@@ -661,6 +678,90 @@ input:checked + .slider:before {
 .footer-actions .btn {
   width: auto;
   min-width: 140px;
+}
+
+/* Feedback Card Styling */
+.feedback-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-smooth);
+}
+
+.feedback-card:hover {
+  border-color: var(--border-hover);
+}
+
+.feedback-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.feedback-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.feedback-icon {
+  font-size: 20px;
+}
+
+.feedback-title h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.feedback-form {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.feedback-form textarea {
+  min-height: 80px;
+  height: 80px;
+  resize: none;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  padding: 12px 16px;
+  flex-grow: 1;
+}
+
+.feedback-form .btn {
+  width: auto;
+  min-width: 170px;
+  flex-shrink: 0;
+  align-self: stretch;
+}
+
+.btn-feedback-success {
+  background-color: var(--success-bg) !important;
+  color: var(--success) !important;
+  border-color: var(--success) !important;
+  box-shadow: 0 0 12px var(--success-glow) !important;
+}
+
+@media (max-width: 768px) {
+  .feedback-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .feedback-form textarea {
+    width: 100%;
+  }
+  
+  .feedback-form .btn {
+    width: 100%;
+  }
 }
 
 /* RESPONSIVE STYLES */

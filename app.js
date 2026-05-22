@@ -11,11 +11,19 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Buttons
   const btnExactMatch = document.getElementById('btnExactMatch');
+  const btnPhraseMatch = document.getElementById('btnPhraseMatch');
   const btnRemoveDuplicates = document.getElementById('btnRemoveDuplicates');
   const btnCleanChars = document.getElementById('btnCleanChars');
   const btnClearAll = document.getElementById('btnClearAll');
   const btnCopyOutput = document.getElementById('btnCopyOutput');
   const btnLoadExample = document.getElementById('btnLoadExample');
+  
+  // Feedback elements
+  const feedbackForm = document.getElementById('feedbackForm');
+  const feedbackText = document.getElementById('feedbackText');
+  const btnSendFeedback = document.getElementById('btnSendFeedback');
+  const feedbackBtnText = document.getElementById('feedbackBtnText');
+  const feedbackIcon = document.getElementById('feedbackIcon');
   
   // Counters & Badges
   const inputLineCounter = document.getElementById('inputLineCounter');
@@ -29,6 +37,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // State Variables
   let totalDuplicatesFiltered = 0;
+  let currentFormatMode = 'exact'; // 'exact' or 'phrase'
+
+  // Helper function to track GA4 events
+  function trackGAEvent(eventName, params = {}) {
+    if (typeof gtag === 'function') {
+      gtag('event', eventName, params);
+    } else {
+      console.log('[GA Debug] Event:', eventName, params);
+    }
+  }
 
   // SVG Icons for clipboard states
   const copyIconSvg = `
@@ -88,20 +106,40 @@ document.addEventListener('DOMContentLoaded', () => {
   function formatExactMatch(lines) {
     return lines.map(line => {
       const trimmed = line.trim();
-      if (!trimmed) return ''; // Preserve spacing or filter? Let's filter empty lines.
+      if (!trimmed) return '';
       
       // Avoid double wrapping if already fully bracketed
       if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
         return trimmed;
       }
       
-      // Clean off unbalanced outer brackets if they exist on one side
       let cleanWord = trimmed;
       if (cleanWord.startsWith('[')) cleanWord = cleanWord.substring(1);
       if (cleanWord.endsWith(']')) cleanWord = cleanWord.substring(0, cleanWord.length - 1);
       
       return `[${cleanWord.trim()}]`;
-    }).filter(line => line !== ''); // Filter out empty elements
+    }).filter(line => line !== '');
+  }
+
+  /**
+   * Intelligently wraps phrases in Google Ads "phrase match" format
+   */
+  function formatPhraseMatch(lines) {
+    return lines.map(line => {
+      const trimmed = line.trim();
+      if (!trimmed) return '';
+      
+      // Avoid double wrapping if already fully quoted
+      if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
+        return trimmed;
+      }
+      
+      let cleanWord = trimmed;
+      if (cleanWord.startsWith('"')) cleanWord = cleanWord.substring(1);
+      if (cleanWord.endsWith('"')) cleanWord = cleanWord.substring(0, cleanWord.length - 1);
+      
+      return `"${cleanWord.trim()}"`;
+    }).filter(line => line !== '');
   }
 
   // --------------------------------------------------------------------------
@@ -112,12 +150,37 @@ document.addEventListener('DOMContentLoaded', () => {
    * Perform Exact Match Conversion
    */
   function processExactMatchAction() {
+    trackGAEvent('click_convert_exact');
     const rawText = inputKeywords.value;
     const lines = getLines(rawText);
     const formatted = formatExactMatch(lines);
     
     outputKeywords.value = formatted.join('\n');
     updateCounters();
+  }
+
+  /**
+   * Perform Phrase Match Conversion
+   */
+  function processPhraseMatchAction() {
+    trackGAEvent('click_convert_phrase');
+    const rawText = inputKeywords.value;
+    const lines = getLines(rawText);
+    const formatted = formatPhraseMatch(lines);
+    
+    outputKeywords.value = formatted.join('\n');
+    updateCounters();
+  }
+
+  /**
+   * Dispatches the formatting action based on the active format mode
+   */
+  function processCurrentFormatAction() {
+    if (currentFormatMode === 'phrase') {
+      processPhraseMatchAction();
+    } else {
+      processExactMatchAction();
+    }
   }
 
   /**
@@ -149,6 +212,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+    trackGAEvent('click_remove_duplicates', { count: duplicatesFound });
+
     if (duplicatesFound > 0) {
       inputKeywords.value = uniqueLines.join('\n');
       totalDuplicatesFiltered += duplicatesFound;
@@ -165,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Trigger auto-process or update counters
     if (toggleAutoProcess.checked) {
-      processExactMatchAction();
+      processCurrentFormatAction();
     } else {
       updateCounters();
     }
@@ -175,6 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
    * Clean special characters, keeping only alphanumeric and spaces
    */
   function cleanSpecialCharactersAction() {
+    trackGAEvent('click_clean_chars');
     const rawText = inputKeywords.value;
     const lines = getLines(rawText);
     let wasModified = false;
@@ -210,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (toggleAutoProcess.checked) {
-      processExactMatchAction();
+      processCurrentFormatAction();
     } else {
       updateCounters();
     }
@@ -224,17 +290,27 @@ document.addEventListener('DOMContentLoaded', () => {
   inputKeywords.addEventListener('input', () => {
     updateCounters();
     if (toggleAutoProcess.checked) {
-      processExactMatchAction();
+      processCurrentFormatAction();
     }
   });
 
   // Action Buttons
-  btnExactMatch.addEventListener('click', processExactMatchAction);
+  btnExactMatch.addEventListener('click', () => {
+    currentFormatMode = 'exact';
+    processExactMatchAction();
+  });
+
+  btnPhraseMatch.addEventListener('click', () => {
+    currentFormatMode = 'phrase';
+    processPhraseMatchAction();
+  });
+
   btnRemoveDuplicates.addEventListener('click', removeDuplicatesAction);
   btnCleanChars.addEventListener('click', cleanSpecialCharactersAction);
   
   if (btnLoadExample) {
     btnLoadExample.addEventListener('click', () => {
+      trackGAEvent('click_load_example');
       inputKeywords.value = [
         'buy running shoes',
         'best trail running shoes',
@@ -247,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       updateCounters();
       if (toggleAutoProcess.checked) {
-        processExactMatchAction();
+        processCurrentFormatAction();
       }
     });
   }
@@ -256,12 +332,13 @@ document.addEventListener('DOMContentLoaded', () => {
   toggleAutoProcess.addEventListener('change', () => {
     localStorage.setItem('autoProcessKeywords', toggleAutoProcess.checked);
     if (toggleAutoProcess.checked) {
-      processExactMatchAction();
+      processCurrentFormatAction();
     }
   });
 
   // Clear All Workspace
   btnClearAll.addEventListener('click', () => {
+    trackGAEvent('click_clear_all');
     inputKeywords.value = '';
     outputKeywords.value = '';
     totalDuplicatesFiltered = 0;
@@ -282,6 +359,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const textToCopy = outputKeywords.value;
     if (!textToCopy) return;
 
+    const lineCount = getLines(textToCopy).filter(l => l.trim() !== '').length;
+    trackGAEvent('click_copy_output', { lines_count: lineCount });
+
     navigator.clipboard.writeText(textToCopy).then(() => {
       // Transition to success state
       btnCopyOutput.classList.add('btn-copied');
@@ -301,6 +381,40 @@ document.addEventListener('DOMContentLoaded', () => {
       document.execCommand('copy');
     });
   });
+
+  // Feedback Form Submission
+  if (feedbackForm) {
+    feedbackForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const feedback = feedbackText.value.trim();
+      if (!feedback) return;
+
+      trackGAEvent('click_submit_feedback');
+
+      const email = 'antkeep.app@gmail.com';
+      const subject = encodeURIComponent('Keyword Formatter Feedback');
+      const body = encodeURIComponent(feedback);
+      
+      // Visual success state
+      const originalText = feedbackBtnText.textContent;
+      const originalIcon = feedbackIcon.innerHTML;
+
+      btnSendFeedback.classList.add('btn-feedback-success');
+      feedbackBtnText.textContent = 'Draft Created!';
+      feedbackIcon.innerHTML = checkIconSvg;
+
+      // Open user email client
+      window.open(`mailto:${email}?subject=${subject}&body=${body}`);
+
+      // Reset feedback form after a brief delay
+      setTimeout(() => {
+        feedbackText.value = '';
+        btnSendFeedback.classList.remove('btn-feedback-success');
+        feedbackBtnText.textContent = originalText;
+        feedbackIcon.innerHTML = originalIcon;
+      }, 3000);
+    });
+  }
 
   // Initialize UI on startup
   updateCounters();
