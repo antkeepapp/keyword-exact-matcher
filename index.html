@@ -143,7 +143,7 @@
 
         <div class="button-stack">
           <!-- Convert to Exact Match -->
-          <button class="btn btn-primary" id="btnExactMatch" title="Wrap keywords in [exact match] format">
+          <button class="btn btn-cta" id="btnExactMatch" title="Wrap keywords in [exact match] format">
             <span class="btn-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <path d="M8 5H5v14h3M16 5h3v14h-3"/>
@@ -198,6 +198,12 @@
         </div>
 
         <div class="textarea-wrapper">
+          <button class="btn-copy-floating" id="btnQuickCopy" title="Quick copy output">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="quickCopyIcon">
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+            </svg>
+          </button>
           <textarea 
             id="outputKeywords" 
             placeholder="Formatted exact match keywords will appear here..." 
@@ -216,9 +222,10 @@
           <h3>Want more features? Tell us what to build next!</h3>
         </div>
       </div>
-      <form class="feedback-form" id="feedbackForm">
+      <form class="feedback-form" id="feedbackForm" action="https://formspree.io/f/YOUR_FORMSPREE_ID_HERE" method="POST">
         <textarea 
           id="feedbackText" 
+          name="message"
           placeholder="Share your feature ideas, suggestions, or report a bug... (e.g. 'Add a lowercase converter' or 'Allow exporting to CSV')"
           spellcheck="false"
           required
@@ -233,6 +240,10 @@
           <span class="btn-text" id="feedbackBtnText">Send Feedback</span>
         </button>
       </form>
+      <div class="feedback-success" id="feedbackSuccess" style="display: none; opacity: 0;">
+        <span class="success-rocket">🚀</span>
+        <p>Thank you! Your feedback helps us grow.</p>
+      </div>
     </section>
 
     <!-- Utility Action Bar (Bottom Controls) -->

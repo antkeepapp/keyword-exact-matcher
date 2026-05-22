@@ -526,6 +526,23 @@ input:checked + .slider:before {
   box-shadow: 0 2px 6px rgba(26, 115, 232, 0.2);
 }
 
+.btn-cta {
+  background: linear-gradient(135deg, #1a73e8 0%, #1d4ed8 100%);
+  color: var(--text-on-accent);
+  box-shadow: 0 4px 15px rgba(26, 115, 232, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-cta:hover {
+  background: linear-gradient(135deg, #3587ec 0%, #2563eb 100%);
+  box-shadow: 0 6px 22px rgba(26, 115, 232, 0.55);
+  transform: translateY(-1px);
+}
+
+.btn-cta:active {
+  transform: translateY(1px);
+}
+
 .btn-primary-alt {
   background-color: rgba(26, 115, 232, 0.05);
   color: #8ab4f8;
@@ -762,6 +779,85 @@ input:checked + .slider:before {
   .feedback-form .btn {
     width: 100%;
   }
+}
+
+/* Floating Copy Button inside textarea wrapper */
+.btn-copy-floating {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: rgba(28, 28, 33, 0.6);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  z-index: 10;
+}
+
+.btn-copy-floating svg {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-copy-floating:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+  border-color: var(--border-hover);
+  transform: scale(1.05);
+}
+
+.btn-copy-floating:active {
+  transform: scale(0.95);
+}
+
+.btn-copy-floating.copied {
+  background-color: var(--success-bg) !important;
+  color: var(--success) !important;
+  border-color: var(--success) !important;
+}
+
+/* Feedback Success Panel */
+.feedback-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  text-align: center;
+  transition: opacity 0.3s ease;
+}
+
+.success-rocket {
+  font-size: 32px;
+  animation: bounce 2s infinite ease-in-out;
+}
+
+.feedback-success p {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--success);
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* RESPONSIVE STYLES */

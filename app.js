@@ -17,6 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnClearAll = document.getElementById('btnClearAll');
   const btnCopyOutput = document.getElementById('btnCopyOutput');
   const btnLoadExample = document.getElementById('btnLoadExample');
+  const btnQuickCopy = document.getElementById('btnQuickCopy');
+  const quickCopyIcon = document.getElementById('quickCopyIcon');
   
   // Feedback elements
   const feedbackForm = document.getElementById('feedbackForm');
@@ -24,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnSendFeedback = document.getElementById('btnSendFeedback');
   const feedbackBtnText = document.getElementById('feedbackBtnText');
   const feedbackIcon = document.getElementById('feedbackIcon');
+  const feedbackSuccess = document.getElementById('feedbackSuccess');
   
   // Counters & Badges
   const inputLineCounter = document.getElementById('inputLineCounter');
@@ -150,7 +153,6 @@ document.addEventListener('DOMContentLoaded', () => {
    * Perform Exact Match Conversion
    */
   function processExactMatchAction() {
-    trackGAEvent('click_convert_exact');
     const rawText = inputKeywords.value;
     const lines = getLines(rawText);
     const formatted = formatExactMatch(lines);
@@ -163,7 +165,6 @@ document.addEventListener('DOMContentLoaded', () => {
    * Perform Phrase Match Conversion
    */
   function processPhraseMatchAction() {
-    trackGAEvent('click_convert_phrase');
     const rawText = inputKeywords.value;
     const lines = getLines(rawText);
     const formatted = formatPhraseMatch(lines);
@@ -296,11 +297,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Action Buttons
   btnExactMatch.addEventListener('click', () => {
+    trackGAEvent('click_convert_exact');
     currentFormatMode = 'exact';
     processExactMatchAction();
   });
 
   btnPhraseMatch.addEventListener('click', () => {
+    trackGAEvent('click_convert_phrase');
     currentFormatMode = 'phrase';
     processPhraseMatchAction();
   });
@@ -382,6 +385,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Floating Quick Copy Action
+  if (btnQuickCopy) {
+    btnQuickCopy.addEventListener('click', () => {
+      const textToCopy = outputKeywords.value;
+      if (!textToCopy) return;
+
+      const lineCount = getLines(textToCopy).filter(l => l.trim() !== '').length;
+      trackGAEvent('click_quick_copy', { lines_count: lineCount });
+
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        btnQuickCopy.classList.add('copied');
+        quickCopyIcon.innerHTML = checkIconSvg;
+
+        setTimeout(() => {
+          btnQuickCopy.classList.remove('copied');
+          quickCopyIcon.innerHTML = copyIconSvg;
+        }, 2000);
+      }).catch(err => {
+        console.error('Quick copy failed: ', err);
+        outputKeywords.select();
+        document.execCommand('copy');
+      });
+    });
+  }
+
   // Feedback Form Submission
   if (feedbackForm) {
     feedbackForm.addEventListener('submit', (e) => {
@@ -391,31 +419,82 @@ document.addEventListener('DOMContentLoaded', () => {
 
       trackGAEvent('click_submit_feedback');
 
-      const email = 'antkeep.app@gmail.com';
-      const subject = encodeURIComponent('Keyword Formatter Feedback');
-      const body = encodeURIComponent(feedback);
-      
-      // Visual success state
+      const action = feedbackForm.getAttribute('action');
+      const method = feedbackForm.getAttribute('method') || 'POST';
+
+      // Visual loading state
       const originalText = feedbackBtnText.textContent;
       const originalIcon = feedbackIcon.innerHTML;
+      btnSendFeedback.disabled = true;
+      feedbackBtnText.textContent = 'Sending...';
+      
+      // Simple rotating spinner
+      feedbackIcon.innerHTML = `
+        <svg class="animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:16px; height:16px;">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-dasharray="32" stroke-dashoffset="8" stroke-linecap="round"></circle>
+        </svg>
+      `;
 
-      btnSendFeedback.classList.add('btn-feedback-success');
-      feedbackBtnText.textContent = 'Draft Created!';
-      feedbackIcon.innerHTML = checkIconSvg;
+      // Helper to show success transition
+      const showSuccess = () => {
+        feedbackForm.style.transition = 'opacity 0.3s ease';
+        feedbackForm.style.opacity = '0';
+        
+        setTimeout(() => {
+          feedbackForm.style.display = 'none';
+          feedbackSuccess.style.display = 'flex';
+          setTimeout(() => {
+            feedbackSuccess.style.opacity = '1';
+          }, 50);
+        }, 300);
+      };
 
-      // Open user email client
-      window.open(`mailto:${email}?subject=${subject}&body=${body}`);
-
-      // Reset feedback form after a brief delay
-      setTimeout(() => {
-        feedbackText.value = '';
-        btnSendFeedback.classList.remove('btn-feedback-success');
-        feedbackBtnText.textContent = originalText;
-        feedbackIcon.innerHTML = originalIcon;
-      }, 3000);
+      // Check if Formspree action is set and is not the placeholder
+      const isPlaceholder = !action || action.includes('YOUR_FORMSPREE_ID_HERE');
+      
+      if (isPlaceholder) {
+        // Mock success with a slight delay for realistic feel
+        setTimeout(() => {
+          showSuccess();
+        }, 1000);
+      } else {
+        // Real Formspree submission
+        fetch(action, {
+          method: method,
+          body: new FormData(feedbackForm),
+          headers: {
+            'Accept': 'application/json'
+          }
+        })
+        .then(response => {
+          if (response.ok) {
+            showSuccess();
+          } else {
+            throw new Error('Form submission failed');
+          }
+        })
+        .catch(error => {
+          console.error('Error submitting feedback form:', error);
+          
+          // Revert button state
+          btnSendFeedback.disabled = false;
+          feedbackBtnText.textContent = originalText;
+          feedbackIcon.innerHTML = originalIcon;
+          
+          alert('Could not submit feedback via API. Opening your mail app instead...');
+          const email = 'antkeep.app@gmail.com';
+          const subject = encodeURIComponent('Keyword Formatter Feedback');
+          const body = encodeURIComponent(feedback);
+          window.open(`mailto:${email}?subject=${subject}&body=${body}`);
+          showSuccess();
+        });
+      }
     });
   }
 
   // Initialize UI on startup
   updateCounters();
+  if (toggleAutoProcess.checked && inputKeywords.value.trim() !== '') {
+    processCurrentFormatAction();
+  }
 });
