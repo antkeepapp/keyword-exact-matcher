@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Ads Exact Match Formatter — Fast Keyword Preparation Tool</title>
+  <meta name="description" content="A premium, lightning-fast single-page web tool for PPC and SEO specialists to clean, deduplicate, and convert keywords to Google Ads exact match formatting.">
+  
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Link Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-main">
+        <div class="logo-area">
+          <div class="logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <line x1="9" y1="9" x2="15" y2="9"/>
+              <line x1="9" y1="15" x2="15" y2="15"/>
+              <line x1="12" y1="9" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <div>
+            <h1>Google Ads Exact Match Formatter</h1>
+            <p class="subtitle">Fast & clean keyword preparation for Keyword Planner</p>
+          </div>
+        </div>
+        <div class="badge-container">
+          <span class="badge badge-primary">PPC UTILITY MVP</span>
+          <span class="badge badge-success">USA TARGETED</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Real-time Stats Dashboard -->
+    <section class="stats-dashboard" id="statsDashboard">
+      <div class="stat-card">
+        <div class="stat-icon text-muted">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Raw Keywords</span>
+          <span class="stat-value" id="statRawCount">0</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon text-success">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Formatted Keywords</span>
+          <span class="stat-value text-success" id="statFormattedCount">0</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon text-info">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Duplicates Filtered</span>
+          <span class="stat-value text-info" id="statDuplicatesRemoved">0</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Workspace Workspace Grid -->
+    <main class="workspace-grid">
+      <!-- Input Panel -->
+      <article class="panel-card">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="panel-dot dot-primary"></span>
+            <h2>1. Input Raw Keywords</h2>
+            <span id="btnLoadExample" class="example-link" title="Load sample keywords to test the tool">Load Example</span>
+          </div>
+          <span class="panel-counter" id="inputLineCounter">0 lines</span>
+        </div>
+        
+        <div class="textarea-wrapper">
+          <textarea 
+            id="inputKeywords" 
+            placeholder="Paste your keywords here...&#10;One keyword per line (e.g.)&#10;buy running shoes&#10;best trail running shoes&#10;  local running gear store  " 
+            spellcheck="false"
+          ></textarea>
+        </div>
+      </article>
+
+      <!-- Middle Command Hub -->
+      <section class="command-hub">
+        <div class="hub-header">
+          <h3>Core Operations</h3>
+          <div class="toggle-container">
+            <label class="switch">
+              <input type="checkbox" id="toggleAutoProcess">
+              <span class="slider round"></span>
+            </label>
+            <span class="toggle-label" title="Automatically apply exact match to inputs as you type">Auto-Match</span>
+          </div>
+        </div>
+
+        <div class="button-stack">
+          <!-- Convert to Exact Match -->
+          <button class="btn btn-primary" id="btnExactMatch" title="Wrap keywords in [exact match] format">
+            <span class="btn-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M8 5H5v14h3M16 5h3v14h-3"/>
+              </svg>
+            </span>
+            <span class="btn-text">Convert to Exact Match <span class="kbd">[ ]</span></span>
+          </button>
+
+          <!-- Remove Duplicates -->
+          <button class="btn btn-secondary" id="btnRemoveDuplicates" title="Clean up repetitive keywords from output">
+            <span class="btn-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+            </span>
+            <span class="btn-text">Remove Duplicates</span>
+          </button>
+
+          <!-- Clean Special Characters -->
+          <button class="btn btn-secondary" id="btnCleanChars" title="Remove punctuation, symbols, and double spaces">
+            <span class="btn-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="4" y1="20" x2="20" y2="4"/>
+                <line x1="20" y1="20" x2="4" y2="4"/>
+                <circle cx="12" cy="12" r="10" class="svg-ghost"/>
+              </svg>
+            </span>
+            <span class="btn-text">Clean Special Characters</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Output Panel -->
+      <article class="panel-card">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="panel-dot dot-success"></span>
+            <h2>2. Processed Output</h2>
+          </div>
+          <span class="panel-counter" id="outputLineCounter">0 lines</span>
+        </div>
+
+        <div class="textarea-wrapper">
+          <textarea 
+            id="outputKeywords" 
+            placeholder="Formatted exact match keywords will appear here..." 
+            readonly 
+            spellcheck="false"
+          ></textarea>
+        </div>
+      </article>
+    </main>
+
+    <!-- Utility Action Bar (Bottom Controls) -->
+    <footer class="utility-footer">
+      <div class="quick-tips">
+        <svg class="tip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="16" x2="12" y2="12"/>
+          <line x1="12" y1="8" x2="12.01" y2="8"/>
+        </svg>
+        <span class="tip-text"><strong>Pro Tip:</strong> Pressing <strong>Convert to Exact Match</strong> automatically trims spaces, avoids double-brackets, and preserves spaces within phrases!</span>
+      </div>
+
+      <div class="footer-actions">
+        <!-- Clear All -->
+        <button class="btn btn-danger-outline" id="btnClearAll" title="Reset raw input and formatted output textareas">
+          <span class="btn-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              <line x1="10" y1="11" x2="10" y2="17"/>
+              <line x1="14" y1="11" x2="14" y2="17"/>
+            </svg>
+          </span>
+          <span class="btn-text">Clear All</span>
+        </button>
+
+        <!-- Copy Output -->
+        <button class="btn btn-success-filled" id="btnCopyOutput" title="Copy all formatted output to clipboard">
+          <span class="btn-icon" id="copyIcon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+            </svg>
+          </span>
+          <span class="btn-text" id="copyBtnText">Copy Output</span>
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Main JavaScript App Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
