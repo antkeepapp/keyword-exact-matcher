@@ -966,3 +966,37 @@ input:checked + .slider:before {
     min-height: 280px;
   }
 }
+
+/* SEO Text Block / FAQ Section */
+.seo-section {
+  margin-top: 24px;
+  padding: 24px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.seo-section h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 12px;
+  letter-spacing: 0.02em;
+}
+
+.seo-section p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.seo-section p:last-child {
+  margin-bottom: 0;
+}
+
+.seo-section strong {
+  color: var(--text-main);
+  font-weight: 600;
+}
